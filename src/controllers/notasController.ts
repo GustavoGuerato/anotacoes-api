@@ -46,3 +46,31 @@
 //   - criarNota deve salvar usuarioId = req.usuarioId na nota
 //   - listarNotas/buscarNota/atualizarNota/deletarNota devem filtrar/checar
 //     se a nota pertence a req.usuarioId antes de responder
+import { Request, Response } from "express";
+import { gerarProximoId, notas } from "../data/db";
+
+export function listarNotas(req: Request, res: Response) {
+  return res.json(notas);
+}
+export function buscarNotas(req: Request, res: Response) {
+  const nota = notas.find((nota) => nota.id === Number(req.params.id));
+  if (!nota) {
+    return res.status(404).json({ message: "Nao foi localizado nenhum Id" });
+  }
+  return nota;
+}
+export function criarNota(req: Request, res: Response) {
+  const { titulo, conteudo } = req.body;
+  if (!titulo || !conteudo) {
+    return res.status(400).json({ message: "titulo ou conteudo vazio" });
+  }
+  const novaNota = {
+    id: gerarProximoId(),
+    titulo,
+    conteudo,
+    usuarioId: 0,
+    criadoEm: new Date().toISOString(),
+    atualizadoEm: new Date().toISOString(),
+  };
+  notas.push(novaNota);
+}
