@@ -25,12 +25,17 @@
 //
 // TODO: exporte o router (export default router)
 import { Router } from "express";
+
 import {
   listarNotas,
   buscarNotas,
   criarNota,
 } from "../controllers/notasController";
+
 const router = Router();
+
 router.get("/", listarNotas);
-router.get("/", buscarNotas);
+router.get("/:id", buscarNotas);
 router.post("/", criarNota);
+
+export default router;
