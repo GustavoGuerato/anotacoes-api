@@ -74,3 +74,38 @@ export function criarNota(req: Request, res: Response) {
   };
   notas.push(novaNota);
 }
+export function atualizarNota(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  if (!id) {
+    return res.status(404).json({ error: "nao foi localizado o ID" });
+  }
+  if (Number.isNaN(id)) {
+    return res.status(404).json({ message: "ID invalido" });
+  }
+  const nota = notas.find((nota) => nota.id === id);
+  if (!nota) {
+    return res.status(404).json({ error: "Nota não encontrada" });
+  }
+  const { titulo, conteudo } = req.body;
+  if (titulo !== undefined) {
+    nota.titulo = titulo;
+  }
+  if (conteudo !== undefined) {
+    nota.conteudo = conteudo;
+  }
+  nota.atualizadoEm = new Date().toISOString();
+  return res.status(200).json(nota);
+}
+export function deletarNota(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  if (!id) {
+    return res.status(400).json({ message: "Nao foi localizado o id" });
+  }
+  const index = notas.findIndex((nota) => nota.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: "Nota não encontrada" });
+  }
+  notas.splice(index, 1);
+
+  return res.status(204).send();
+}

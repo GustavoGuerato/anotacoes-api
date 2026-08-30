@@ -30,6 +30,8 @@ import {
   listarNotas,
   buscarNotas,
   criarNota,
+  atualizarNota,
+  deletarNota,
 } from "../controllers/notasController";
 
 const router = Router();
@@ -37,5 +39,6 @@ const router = Router();
 router.get("/", listarNotas);
 router.get("/:id", buscarNotas);
 router.post("/", criarNota);
-
+router.put("/:id", atualizarNota);
+router.delete("/:id", deletarNota);
 export default router;
