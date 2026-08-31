@@ -24,3 +24,21 @@
 //   - se não bater, 401 "credenciais inválidas"
 //   - se bater, gera o token: jwt.sign({ usuarioId: usuario.id }, JWT_SECRET, { expiresIn: "1h" })
 //   - responde com { token }
+import bcrypt from "bcrypt";
+import { Request, Response } from "express";
+import { gerarProximoIdUsuario, usuarios } from "../data/db";
+const JWT_SECRET = "7f4a9c2e8b1d6f3a5e9c0b7d2a4f8e1c";
+export async function registrar(req: Request, res: Response) {
+  const { email, senha } = req.body;
+  if (!email || !senha) {
+    return res.status(400).json({ message: "Campos Obrigatorios" });
+  }
+
+  if (usuarios.some((usuario) => usuario.email === email)) {
+    return res.status(400).json({ message: "Email Ja cadastrado" });
+  }
+  const senhaHash = await bcrypt.hash(senha, 10);
+  const usuario = { id: gerarProximoIdUsuario(), email, senhaHash };
+  usuarios.push(usuario);
+  return res.status(201).json({ id: usuario.id, email: usuario.email });
+}

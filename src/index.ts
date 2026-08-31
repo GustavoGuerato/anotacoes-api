@@ -16,7 +16,6 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ mensagem: "API no ar" });
 });
 
-// Tratamento de rotas não encontradas
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     error: "Rota não encontrada",

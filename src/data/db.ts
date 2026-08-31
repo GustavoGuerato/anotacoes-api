@@ -14,9 +14,16 @@
 // TODO: importe a interface Usuario de ../models/Usuario
 // TODO: crie e exporte um array `usuarios: Usuario[]` começando vazio
 // TODO: crie um controle de id separado pra usuários (mesma lógica de cima)
-import { Nota } from "../models/Nota";
+import type { Nota } from "../models/Nota";
+import type { Usuario } from "../models/Usuario";
+
 export const notas: Nota[] = [];
 let proximoId = 1;
 export function gerarProximoId(): number {
   return proximoId++;
+}
+export const usuarios: Usuario[] = [];
+let proximoIdUsuario = 1;
+export function gerarProximoIdUsuario(): number {
+  return proximoIdUsuario++;
 }

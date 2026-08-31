@@ -8,3 +8,8 @@
 // DICA: quando for devolver o usuário numa resposta (ex: depois do login),
 // nunca envie senhaHash pro cliente — monte um objeto novo só com id/email.
 [];
+export interface Usuario {
+  id: number;
+  email: string;
+  senhaHash: string;
+}
