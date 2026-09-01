@@ -50,17 +50,25 @@ import { Request, Response } from "express";
 import { gerarProximoId, notas } from "../data/db";
 
 export function listarNotas(req: Request, res: Response) {
-  return res.json(notas);
+  const usuarioId = (req as any).usuarioId;
+
+  const notasDousuario = notas.filter((n) => n.usuarioId === usuarioId);
+  return res.json(notasDousuario);
 }
 export function buscarNotas(req: Request, res: Response) {
-  const nota = notas.find((nota) => nota.id === Number(req.params.id));
-  if (!nota) {
+  const id = Number(req.params.id);
+  const usuarioId = (req as any).usuarioId;
+
+  const nota = notas.find((nota) => nota.id === id);
+  if (!nota || nota.usuarioId !== usuarioId) {
     return res.status(404).json({ message: "Nao foi localizado nenhum Id" });
   }
-  return nota;
+  res.json(nota);
 }
 export function criarNota(req: Request, res: Response) {
   const { titulo, conteudo } = req.body;
+  const usuarioId = (req as any).usuarioId;
+
   if (!titulo || !conteudo) {
     return res.status(400).json({ message: "titulo ou conteudo vazio" });
   }
@@ -72,10 +80,12 @@ export function criarNota(req: Request, res: Response) {
     criadoEm: new Date().toISOString(),
     atualizadoEm: new Date().toISOString(),
   };
-  notas.push(novaNota);
+  res.status(201).json(novaNota);
 }
 export function atualizarNota(req: Request, res: Response) {
   const id = Number(req.params.id);
+  const usuarioId = (req as any).usuarioId;
+  const { titulo, conteudo } = req.body;
   if (!id) {
     return res.status(404).json({ error: "nao foi localizado o ID" });
   }
@@ -83,29 +93,29 @@ export function atualizarNota(req: Request, res: Response) {
     return res.status(404).json({ message: "ID invalido" });
   }
   const nota = notas.find((nota) => nota.id === id);
-  if (!nota) {
+  if (!nota || nota.usuarioId !== usuarioId) {
     return res.status(404).json({ error: "Nota não encontrada" });
   }
-  const { titulo, conteudo } = req.body;
-  if (titulo !== undefined) {
-    nota.titulo = titulo;
+  if (!titulo || !conteudo) {
+    return res.status(400).json({ erro: "titulo e conteudo sao obrigatorios" });
   }
-  if (conteudo !== undefined) {
-    nota.conteudo = conteudo;
-  }
+  nota.titulo = titulo;
+  nota.conteudo = conteudo;
   nota.atualizadoEm = new Date().toISOString();
-  return res.status(200).json(nota);
+
+  res.json(nota);
 }
 export function deletarNota(req: Request, res: Response) {
   const id = Number(req.params.id);
+  const usuarioId = (req as any).usuarioId;
+  const index = notas.findIndex((nota) => nota.id === id);
   if (!id) {
     return res.status(400).json({ message: "Nao foi localizado o id" });
   }
-  const index = notas.findIndex((nota) => nota.id === id);
-  if (index === -1) {
+
+  if (index === -1 || notas[index].usuarioId !== usuarioId) {
     return res.status(404).json({ message: "Nota não encontrada" });
   }
   notas.splice(index, 1);
-
-  return res.status(204).send();
+  res.status(204).send();
 }

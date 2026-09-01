@@ -26,6 +26,7 @@
 //   - responde com { token }
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { gerarProximoIdUsuario, usuarios } from "../data/db";
 const JWT_SECRET = "7f4a9c2e8b1d6f3a5e9c0b7d2a4f8e1c";
 export async function registrar(req: Request, res: Response) {
@@ -44,9 +45,21 @@ export async function registrar(req: Request, res: Response) {
 }
 export async function login(req: Request, res: Response) {
   const { email, senha } = req.body;
-  if (!usuarios.find((usuario) => usuario.email === email)) {
+  const usuario = usuarios.find((usuario) => usuario.email === email);
+
+  if (!usuario) {
     return res.status(401).json({
       message: "Credenciais inválidas",
     });
   }
+  const senhaValida = await bcrypt.compare(senha, usuario.senhaHash);
+  if (!senhaValida) {
+    return res.status(401).json({ message: "Credenciais Invalidas" });
+  }
+  const token = jwt.sign({ usuarioId: usuario.id }, JWT_SECRET, {
+    expiresIn: "1h",
+  });
+  return res.status(200).json({
+    token,
+  });
 }

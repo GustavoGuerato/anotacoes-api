@@ -27,18 +27,19 @@
 import { Router } from "express";
 
 import {
-  listarNotas,
+  atualizarNota,
   buscarNotas,
   criarNota,
-  atualizarNota,
   deletarNota,
+  listarNotas,
 } from "../controllers/notasController";
+import { autenticar } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/", listarNotas);
-router.get("/:id", buscarNotas);
-router.post("/", criarNota);
-router.put("/:id", atualizarNota);
-router.delete("/:id", deletarNota);
+router.get("/", autenticar, listarNotas);
+router.get("/:id", autenticar, buscarNotas);
+router.post("/", autenticar, criarNota);
+router.put("/:id", autenticar, atualizarNota);
+router.delete("/:id", autenticar, deletarNota);
 export default router;

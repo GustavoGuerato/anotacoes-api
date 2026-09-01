@@ -19,3 +19,28 @@
 //     - se der certo, o payload decodificado tem o usuarioId que você
 //       colocou no jwt.sign lá no login — salve isso em req.usuarioId
 //   - chame next() pra deixar a requisição continuar pra rota de verdade
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+const JWT_SECRET = "7f4a9c2e8b1d6f3a5e9c0b7d2a4f8e1c";
+
+export function autenticar(req: Request, res: Response, next: NextFunction) {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return res.status(401).json({ message: "Token não enviado" });
+    next();
+  }
+  const [tipo, token] = authorization.split(" ");
+  if (tipo !== "Bearer" || !token) {
+    return res.status(401).json({
+      message: "Token inválido",
+    });
+  }
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as { usuarioId: number };
+    (req as any).usuarioId = payload.usuarioId;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Token Invalido" });
+  }
+}
