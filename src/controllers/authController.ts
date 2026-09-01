@@ -42,3 +42,11 @@ export async function registrar(req: Request, res: Response) {
   usuarios.push(usuario);
   return res.status(201).json({ id: usuario.id, email: usuario.email });
 }
+export async function login(req: Request, res: Response) {
+  const { email, senha } = req.body;
+  if (!usuarios.find((usuario) => usuario.email === email)) {
+    return res.status(401).json({
+      message: "Credenciais inválidas",
+    });
+  }
+}
